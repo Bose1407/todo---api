@@ -1,27 +1,28 @@
-const express = require('express')
+const express = require('express'); // Importing the Express framework for building the application
+const dotenv = require('dotenv'); // Importing dotenv to manage environment variables
+const { connectDb } = require('./config/db'); // Importing the function to establish database connection
+const tasksroutes = require('./routes/tasks.routes'); // Importing the task routes
 
-const dotenv = require('dotenv')
+dotenv.config(); // Loading environment variables from a .env file into process.env
 
-const {connectDb} = require('./config/db')
+const app = express(); // Initializing the Express application
 
-const tasksroutes = require('./routes/tasks.routes')
+app.use(express.json()); // Middleware to parse incoming JSON requests
 
-dotenv.config()
+// Defining a base route for the task-related routes
+// All routes in tasks.routes will be prefixed with '/api'
+app.use('/api', tasksroutes);
 
-const app = express()
+// Defining the server port
+// Defaults to 5000 if process.env.Port is not set
+const Port = 5000 || process.env.Port;
 
-app.use(express.json())
-
-app.use('/api',tasksroutes)
-
-const Port = 5000||process.env.Port
-
-app.listen(Port,()=>{
+// Starting the server
+app.listen(Port, () => {
     try {
-            connectDb();
-            console.log(`Server Running at port ${Port}`);
+        connectDb(); // Connecting to the database when the server starts
+        console.log(`Server Running at port ${Port}`); // Logging success message
     } catch (error) {
-        console.log(error.message);
+        console.log(error.message); // Logging errors if database connection fails
     }
-    
-})
+});
